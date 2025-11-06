@@ -109,12 +109,48 @@
             margin-bottom: 10px;
         }
         
-        .warning-box {
-            background: #fff0f0;
-            border: 2px solid #ff6b6b;
+        .code-entry-box {
+            background: #f0f9ff;
+            border: 2px solid #3b82f6;
             border-radius: 10px;
-            padding: 15px;
+            padding: 20px;
             margin-bottom: 30px;
+        }
+        
+        .code-entry-box h3 {
+            color: #3b82f6;
+            margin-bottom: 15px;
+        }
+        
+        .code-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .code-input {
+            padding: 10px;
+            border: 2px solid #3b82f6;
+            border-radius: 5px;
+            font-size: 1em;
+            text-transform: uppercase;
+            width: 250px;
+        }
+        
+        .code-submit-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+        }
+        
+        .code-submit-btn:hover {
+            background: #2563eb;
         }
         
         .progress-tracker {
@@ -142,6 +178,34 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+        }
+        
+        .completed-codes {
+            background: #f0fdf4;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .completed-codes.show {
+            display: block;
+        }
+        
+        .completed-codes h4 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        
+        .code-item {
+            background: white;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+            font-family: monospace;
+            font-size: 0.9em;
         }
         
         .matrix-step {
@@ -262,20 +326,6 @@
             color: white;
         }
         
-        .mark-complete-btn {
-            padding: 10px 20px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .mark-complete-btn:hover {
-            background: #45a049;
-        }
-        
         .final-certificate-section {
             display: none;
             background: #f0fdf4;
@@ -325,25 +375,36 @@
 
         <div class="welcome-message" id="welcomeMessage">
             <strong>Welcome, <span id="welcomeName"></span>!</strong> 
-            <p>Your progress is saved automatically on this device.</p>
-            <p>Complete each matrix by getting 100% correct answers to unlock the next one.</p>
+            <p>Your progress is saved using completion codes from each matrix.</p>
+            <p>After completing each matrix with 100% accuracy, you'll receive a unique code to unlock the next one.</p>
         </div>
 
-        <!-- Important Notice -->
-        <div class="warning-box">
-            <h4>⚠️ Important: How This Works</h4>
-            <p><strong>1.</strong> Click each matrix link to open it in a new tab</p>
-            <p><strong>2.</strong> Complete the matrix with 100% correct answers</p>
-            <p><strong>3.</strong> Return to this page and click "Mark Complete"</p>
-            <p><strong>4.</strong> Your progress saves on THIS device - use the same browser</p>
+        <!-- Code Entry Box -->
+        <div class="code-entry-box" id="codeEntryBox" style="display: none;">
+            <h3>🔑 Enter Your Completion Code</h3>
+            <p style="margin-bottom: 15px;">After completing a matrix, enter the code shown on your completion screen:</p>
+            <div class="code-input-group">
+                <input type="text" 
+                       id="completionCodeInput" 
+                       class="code-input" 
+                       placeholder="e.g., JAMIE-1106-CORE"
+                       onkeyup="this.value = this.value.toUpperCase()">
+                <button class="code-submit-btn" onclick="submitCode()">Submit Code</button>
+            </div>
+            
+            <div class="completed-codes" id="completedCodes">
+                <h4>✓ Codes Entered:</h4>
+                <div id="codesList"></div>
+            </div>
         </div>
 
         <div class="instructions">
-            <h3>📋 Instructions</h3>
+            <h3>📋 How It Works</h3>
             <p>
-                Complete each matrix in order. You must finish one before the next unlocks.<br>
-                After completing ALL 5 matrices, generate your single completion certificate.<br>
-                Submit the certificate to D2L for credit.
+                <strong>1.</strong> Complete each matrix in order with 100% correct answers<br>
+                <strong>2.</strong> Copy the completion code shown at the end<br>
+                <strong>3.</strong> Return here and enter the code to unlock the next matrix<br>
+                <strong>4.</strong> After all 5 codes: generate your completion certificate
             </p>
         </div>
 
@@ -375,10 +436,6 @@
                        class="matrix-link start-link" 
                        id="link1" 
                        target="_blank">Open Core Foundations →</a>
-                    <button onclick="markComplete(1)" 
-                            id="mark1" 
-                            class="mark-complete-btn" 
-                            style="display: inline-block;">Mark Complete ✓</button>
                 </div>
             </div>
 
@@ -395,11 +452,7 @@
                     Compare Haloperidol, Fluphenazine, and Chlorpromazine.
                 </div>
                 <div class="matrix-controls">
-                    <span class="matrix-link locked-link" id="link2">🔒 Complete Previous First</span>
-                    <button onclick="markComplete(2)" 
-                            id="mark2" 
-                            class="mark-complete-btn" 
-                            style="display: none;">Mark Complete ✓</button>
+                    <span class="matrix-link locked-link" id="link2">🔒 Enter Code to Unlock</span>
                 </div>
             </div>
 
@@ -416,11 +469,7 @@
                     Master the "workhorse" SGAs.
                 </div>
                 <div class="matrix-controls">
-                    <span class="matrix-link locked-link" id="link3">🔒 Complete Previous First</span>
-                    <button onclick="markComplete(3)" 
-                            id="mark3" 
-                            class="mark-complete-btn" 
-                            style="display: none;">Mark Complete ✓</button>
+                    <span class="matrix-link locked-link" id="link3">🔒 Enter Code to Unlock</span>
                 </div>
             </div>
 
@@ -437,11 +486,7 @@
                     Explore the newest SGAs.
                 </div>
                 <div class="matrix-controls">
-                    <span class="matrix-link locked-link" id="link4">🔒 Complete Previous First</span>
-                    <button onclick="markComplete(4)" 
-                            id="mark4" 
-                            class="mark-complete-btn" 
-                            style="display: none;">Mark Complete ✓</button>
+                    <span class="matrix-link locked-link" id="link4">🔒 Enter Code to Unlock</span>
                 </div>
             </div>
 
@@ -458,11 +503,7 @@
                     Synthesize everything!
                 </div>
                 <div class="matrix-controls">
-                    <span class="matrix-link locked-link" id="link5">🔒 Complete Previous First</span>
-                    <button onclick="markComplete(5)" 
-                            id="mark5" 
-                            class="mark-complete-btn" 
-                            style="display: none;">Mark Complete ✓</button>
+                    <span class="matrix-link locked-link" id="link5">🔒 Enter Code to Unlock</span>
                 </div>
             </div>
 
@@ -485,9 +526,17 @@
             matrix5: 'https://sites.google.com/arizona.edu/antipsychoticcorefoundationsme/antipsychotic-matrix-assignment/mega-matrix'
         };
 
+        // Expected code patterns for validation
+        var expectedCodes = {
+            1: 'CORE',
+            2: 'FGA',
+            3: 'SGA-CLASSIC',
+            4: 'SGA-NEWER',
+            5: 'MEGA'
+        };
+
         // Check for saved progress on load
         window.onload = function() {
-            // Check for saved student info
             var savedName = localStorage.getItem('aps_student_name');
             var savedEmail = localStorage.getItem('aps_student_email');
             
@@ -497,6 +546,7 @@
                 document.getElementById('welcomeName').textContent = savedName;
                 document.getElementById('welcomeMessage').className = 'welcome-message show';
                 document.getElementById('studentSection').style.display = 'none';
+                document.getElementById('codeEntryBox').style.display = 'block';
             }
             
             updateProgress();
@@ -511,40 +561,99 @@
                 return;
             }
             
-            // Save student info
             localStorage.setItem('aps_student_name', name);
             localStorage.setItem('aps_student_email', email);
             localStorage.setItem('aps_start_time', new Date().toISOString());
             
-            // Show welcome
             document.getElementById('welcomeName').textContent = name;
             document.getElementById('welcomeMessage').className = 'welcome-message show';
             document.getElementById('studentSection').style.display = 'none';
+            document.getElementById('codeEntryBox').style.display = 'block';
             
+            updateProgress();
+        }
+
+        function submitCode() {
+            var code = document.getElementById('completionCodeInput').value.trim().toUpperCase();
+            
+            if (!code) {
+                alert('Please enter a completion code.');
+                return;
+            }
+
+            // Validate code format: NAME-DATE-TYPE
+            var parts = code.split('-');
+            if (parts.length < 3) {
+                alert('Invalid code format. Code should look like: JAMIE-1106-CORE');
+                return;
+            }
+
+            var codeType = parts[parts.length - 1]; // Last part is the matrix type
+            var matrixNum = 0;
+
+            // Determine which matrix this code is for
+            for (var i = 1; i <= 5; i++) {
+                if (codeType === expectedCodes[i]) {
+                    matrixNum = i;
+                    break;
+                }
+            }
+
+            if (matrixNum === 0) {
+                alert('Invalid completion code. Please check the code and try again.');
+                return;
+            }
+
+            // Check if already entered
+            if (localStorage.getItem('aps_code_' + matrixNum)) {
+                alert('You have already entered a code for Matrix ' + matrixNum + '!');
+                return;
+            }
+
+            // Save the code with timestamp
+            localStorage.setItem('aps_code_' + matrixNum, code);
+            localStorage.setItem('aps_matrix_' + matrixNum + '_complete', 'true');
+            localStorage.setItem('aps_matrix_' + matrixNum + '_time', new Date().toISOString());
+
+            // Clear input
+            document.getElementById('completionCodeInput').value = '';
+
+            // Show success
+            alert('Success! Matrix ' + matrixNum + ' marked complete. Code saved: ' + code);
+
             updateProgress();
         }
 
         function updateProgress() {
             var completedCount = 0;
-            
+            var codesList = document.getElementById('codesList');
+            codesList.innerHTML = '';
+
             for (var i = 1; i <= 5; i++) {
                 var isComplete = localStorage.getItem('aps_matrix_' + i + '_complete') === 'true';
                 var step = document.getElementById('step' + i);
                 var link = document.getElementById('link' + i);
                 var badge = document.getElementById('badge' + i);
-                var markBtn = document.getElementById('mark' + i);
                 
                 if (isComplete) {
                     completedCount++;
                     step.className = 'matrix-step completed';
                     badge.className = 'badge show';
                     
-                    // Update link to be clickable again for review
+                    // Show code in list
+                    var savedCode = localStorage.getItem('aps_code_' + i);
+                    if (savedCode) {
+                        var codeItem = document.createElement('div');
+                        codeItem.className = 'code-item';
+                        codeItem.textContent = '✓ Matrix ' + i + ': ' + savedCode;
+                        codesList.appendChild(codeItem);
+                    }
+                    
+                    // Update link to be clickable for review
                     if (link.tagName === 'A') {
                         link.textContent = '✓ Review Matrix';
                         link.className = 'matrix-link completed-link';
                     } else {
-                        // Convert span to link for completed matrices
                         var newLink = document.createElement('a');
                         newLink.href = matrixURLs['matrix' + i];
                         newLink.target = '_blank';
@@ -553,8 +662,6 @@
                         newLink.id = 'link' + i;
                         link.parentNode.replaceChild(newLink, link);
                     }
-                    
-                    markBtn.style.display = 'none';
                 } else if (completedCount === i - 1) {
                     // This is the current matrix to complete
                     step.className = 'matrix-step current';
@@ -569,23 +676,23 @@
                         newLink.id = 'link' + i;
                         link.parentNode.replaceChild(newLink, link);
                     }
-                    
-                    markBtn.style.display = 'inline-block';
                 } else {
                     // Still locked
                     step.className = 'matrix-step locked';
                     
-                    // Keep as span if locked
                     if (link.tagName === 'A') {
                         var newSpan = document.createElement('span');
                         newSpan.className = 'matrix-link locked-link';
-                        newSpan.textContent = '🔒 Complete Previous First';
+                        newSpan.textContent = '🔒 Enter Code to Unlock';
                         newSpan.id = 'link' + i;
                         link.parentNode.replaceChild(newSpan, link);
                     }
-                    
-                    markBtn.style.display = 'none';
                 }
+            }
+
+            // Show codes list if any completed
+            if (completedCount > 0) {
+                document.getElementById('completedCodes').className = 'completed-codes show';
             }
             
             // Update progress bar
@@ -600,34 +707,6 @@
             }
         }
 
-        function markComplete(matrixNumber) {
-            var name = localStorage.getItem('aps_student_name');
-            
-            if (!name) {
-                alert('Please enter your student information first.');
-                return;
-            }
-            
-            // Confirm completion
-            if (!confirm('Have you completed this matrix with 100% correct answers?')) {
-                return;
-            }
-            
-            // Mark as complete
-            localStorage.setItem('aps_matrix_' + matrixNumber + '_complete', 'true');
-            localStorage.setItem('aps_matrix_' + matrixNumber + '_time', new Date().toISOString());
-            
-            // Generate progress code
-            var date = new Date();
-            var dateStr = (date.getMonth() + 1) + '' + date.getDate();
-            var code = name.substring(0, 5).toUpperCase() + '-' + dateStr + '-M' + matrixNumber;
-            localStorage.setItem('aps_progress_code_' + matrixNumber, code);
-            
-            alert('Matrix ' + matrixNumber + ' marked complete!\n\nYour progress code: ' + code + '\n\nSave this code as backup!');
-            
-            updateProgress();
-        }
-
         function generateCertificate() {
             var name = localStorage.getItem('aps_student_name');
             var email = localStorage.getItem('aps_student_email');
@@ -637,7 +716,6 @@
                 day: 'numeric' 
             });
             
-            // Create certificate in new window
             var certWindow = window.open('', '_blank');
             certWindow.document.write('<html><head><title>Completion Certificate - ' + name + '</title>');
             certWindow.document.write('<style>');
@@ -648,7 +726,8 @@
             certWindow.document.write('.completion-text { font-size: 1.3em; text-align: center; line-height: 1.8; margin: 30px 0; color: #555; }');
             certWindow.document.write('.matrices-completed { background: #f8f9fa; padding: 30px; border-radius: 10px; margin: 30px 0; }');
             certWindow.document.write('.matrices-completed h3 { color: #764ba2; margin-bottom: 20px; text-align: center; }');
-            certWindow.document.write('.matrix-item { display: flex; justify-content: space-between; padding: 10px; margin: 5px 0; background: white; border-left: 4px solid #4CAF50; }');
+            certWindow.document.write('.matrix-item { display: flex; justify-content: space-between; padding: 12px; margin: 8px 0; background: white; border-left: 4px solid #4CAF50; }');
+            certWindow.document.write('.code-display { font-family: monospace; color: #4CAF50; font-weight: bold; }');
             certWindow.document.write('.date-signature { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 30px; border-top: 2px solid #eee; }');
             certWindow.document.write('.signature-line { text-align: center; width: 40%; }');
             certWindow.document.write('.signature-line hr { border: none; border-bottom: 2px solid #333; margin: 10px 0; }');
@@ -665,7 +744,7 @@
             certWindow.document.write('</div>');
             
             certWindow.document.write('<div class="matrices-completed">');
-            certWindow.document.write('<h3>Completed Learning Modules:</h3>');
+            certWindow.document.write('<h3>Completed Learning Modules with Verification Codes:</h3>');
             
             var matrixNames = [
                 'Core Foundations',
@@ -677,11 +756,15 @@
             
             for (var i = 1; i <= 5; i++) {
                 var completionTime = localStorage.getItem('aps_matrix_' + i + '_time');
-                var dateStr = completionTime ? new Date(completionTime).toLocaleDateString() : 'Completed';
+                var completionCode = localStorage.getItem('aps_code_' + i);
+                var dateStr = completionTime ? new Date(completionTime).toLocaleString() : 'Completed';
                 
                 certWindow.document.write('<div class="matrix-item">');
-                certWindow.document.write('<strong>✓ Module ' + i + ': ' + matrixNames[i-1] + '</strong>');
-                certWindow.document.write('<span>' + dateStr + '</span>');
+                certWindow.document.write('<div>');
+                certWindow.document.write('<strong>✓ Module ' + i + ': ' + matrixNames[i-1] + '</strong><br>');
+                certWindow.document.write('<span style="font-size:0.9em; color:#666;">' + dateStr + '</span>');
+                certWindow.document.write('</div>');
+                certWindow.document.write('<div class="code-display">' + (completionCode || 'N/A') + '</div>');
                 certWindow.document.write('</div>');
             }
             
@@ -708,6 +791,7 @@
             certWindow.document.write('<li>Save as: ' + name.replace(/\s+/g, '_') + '_Antipsychotic_Matrix_Complete.pdf</li>');
             certWindow.document.write('<li>Upload to D2L assignments</li>');
             certWindow.document.write('</ol>');
+            certWindow.document.write('<p style="margin-top:15px;"><strong>Note:</strong> Your instructor can verify completion using the codes listed above.</p>');
             certWindow.document.write('</div>');
             certWindow.document.write('</div></body></html>');
         }
