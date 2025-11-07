@@ -581,26 +581,44 @@
                 return;
             }
 
-            // Validate code format: NAME-DATE-TYPE
-            var parts = code.split('-');
-            if (parts.length < 3) {
-                alert('Invalid code format. Code should look like: JAMIE-1106-CORE');
-                return;
-            }
-
-            var codeType = parts[parts.length - 1]; // Last part is the matrix type
             var matrixNum = 0;
+            var codeType = '';
 
-            // Determine which matrix this code is for
-            for (var i = 1; i <= 5; i++) {
-                if (codeType === expectedCodes[i]) {
-                    matrixNum = i;
-                    break;
+            // Check for simple format first: TYPE-COMPLETE-YEAR (e.g., CORE-COMPLETE-2025)
+            if (code.includes('COMPLETE')) {
+                var parts = code.split('-');
+                codeType = parts[0]; // First part is the type
+                
+                // Map simple codes to matrix numbers
+                var simpleCodeMap = {
+                    'CORE': 1,
+                    'FGA': 2,
+                    'SGA': 3,
+                    'SGACLASSIC': 3,
+                    'SGANEWER': 4,
+                    'MEGA': 5
+                };
+                
+                matrixNum = simpleCodeMap[codeType] || 0;
+            } 
+            // Check for new format: NAME-DATE-TYPE (e.g., JAMIE-1106-CORE)
+            else {
+                var parts = code.split('-');
+                if (parts.length >= 3) {
+                    codeType = parts[parts.length - 1]; // Last part is the type
+                    
+                    // Determine which matrix this code is for
+                    for (var i = 1; i <= 5; i++) {
+                        if (codeType === expectedCodes[i]) {
+                            matrixNum = i;
+                            break;
+                        }
+                    }
                 }
             }
 
             if (matrixNum === 0) {
-                alert('Invalid completion code. Please check the code and try again.');
+                alert('Invalid completion code. Please check the code and try again.\n\nAccepted formats:\n- CORE-COMPLETE-2025\n- JAMIE-1106-CORE');
                 return;
             }
 
